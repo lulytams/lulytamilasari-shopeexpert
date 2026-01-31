@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Preview - Lulyta Milasari</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 1.2em;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            background: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            font-weight: 600;
+        }
+        
+        .tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            display: none;
+        }
+        
+        .content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .metric-card h3 {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        
+        .metric-card p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .chart-container {
+            margin: 30px 0;
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+        }
+        
+        .chart-container h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        .case-study {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+        
+        .case-study h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+        
+        .case-study h4 {
+            color: #764ba2;
+            margin: 20px 0 10px 0;
+            font-size: 1.3em;
+        }
+        
+        .case-study ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+        
+        .process-flow {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .process-step {
+            flex: 1;
+            min-width: 150px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .process-step:not(:last-child)::after {
+            content: '→';
+            position: absolute;
+            right: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2em;
+            color: #667eea;
+        }
+        
+        .award-badge {
+            display: inline-block;
+            background: #ffd700;
+            color: #333;
+            padding: 10px 20px;
+            border-radius: 25px;
+            margin: 10px 5px;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+        }
+        
+        .campaign-box {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+        }
+        
+        .campaign-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .campaign-item {
+            background: rgba(255,255,255,0.2);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .campaign-item h4 {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+        
+        .backlog-highlight {
+            background: linear-gradient(135deg, rgba(255,107,107,0.1) 0%, rgba(238,90,36,0.1) 100%);
+            border-left: 5px solid #ff6b6b;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .complexity-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .complexity-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid;
+        }
+        
+        .complexity-card.high-value {
+            border-left-color: #e74c3c;
+        }
+        
+        .complexity-card.fraud {
+            border-left-color: #e67e22;
+        }
+        
+        .complexity-card.hc {
+            border-left-color: #d35400;
+        }
+        
+        .complexity-card.aging {
+            border-left-color: #c0392b;
+        }
+        
+        .complexity-card h5 {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .process-step:not(:last-child)::after {
+                content: '↓';
+                right: 50%;
+                top: auto;
+                bottom: -30px;
+                transform: translateX(50%);
+            }
+            
+            .process-flow {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Professional Portfolio</h1>
+            <p>Lulyta Milasari - Customer Operations & Analytics</p>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('overview')">📊 Overview</div>
+            <div class="tab" onclick="showTab('shopee-expertise')">🛍️ Shopee Expertise</div>
+            <div class="tab" onclick="showTab('dispute')">⚖️ Dispute Resolution</div>
+            <div class="tab" onclick="showTab('backlog')">🎯 Backlog Specialist</div>
+            <div class="tab" onclick="showTab('social')">📱 Social Media</div>
+            <div class="tab" onclick="showTab('process')">🔄 Process Flow</div>
+        </div>
+        
+        <!-- Overview Tab -->
+        <div id="overview" class="content active">
+            <h2 style="color: #667eea; margin-bottom: 30px;">Career Highlights</h2>
+            
+            <div class="metric-grid">
+                <div class="metric-card">
+                    <h3>3+</h3>
+                    <p>Years of Experience</p>
+                </div>
+                <div class="metric-card">
+                    <h3>80+</h3>
+                    <p>Daily Cases Handled</p>
+                </div>
+                <div class="metric-card">
+                    <h3>1,000+</h3>
+                    <p>Daily Social Engagements</p>
+                </div>
+                <div class="metric-card">
+                    <h3>2</h3>
+                    <p>Best Agent Awards</p>
+                </div>
+            </div>
+            
+            <div class="campaign-box">
+                <h3 style="color: white; margin-bottom: 10px;">🔥 Major Campaign Experience</h3>
+                <p style="margin-bottom: 20px; opacity: 0.95;">Successfully managed peak volume periods with 2-3x normal case load</p>
+                <div class="campaign-grid">
+                    <div class="campaign-item">
+                        <h4>9.9</h4>
+                        <p>September Sale</p>
+                    </div>
+                    <div class="campaign-item">
+                        <h4>10.10</h4>
+                        <p>October Sale</p>
+                    </div>
+                    <div class="campaign-item">
+                        <h4>11.11</h4>
+                        <p>Singles' Day</p>
+                    </div>
+                    <div class="campaign-item">
+                        <h4>12.12</h4>
+                        <p>Year End Sale</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin: 30px 0;">
+                <h3 style="color: #667eea; margin-bottom: 20px;">🏆 Awards & Recognition</h3>
+                <span class="award-badge">🥇 Best Agent 2020</span>
+                <span class="award-badge">🥈 Runner-Up Best Agent 2022</span>
+                <span class="award-badge">⭐ Multiple Individual Performance Rewards</span>
+            </div>
+            
+            <div class="chart-container">
+                <h3>📈 Career Progression Timeline</h3>
+                <canvas id="timelineChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Shopee Expertise Tab -->
+        <div id="shopee-expertise" class="content">
+            <div style="background: linear-gradient(135deg, #ee4d2d 0%, #ff6c40 100%); color: white; padding: 40px; border-radius: 20px; margin-bottom: 30px; text-align: center;">
+                <h2 style="color: white; font-size: 2.5em; margin-bottom: 15px;">🛍️ Shopee Platform Expertise</h2>
+                <p style="font-size: 1.3em; opacity: 0.95;">3.5 Years of Insider Knowledge & Deep Platform Understanding</p>
+            </div>
+            
+            <div class="case-study" style="background: linear-gradient(135deg, rgba(238,77,45,0.05) 0%, rgba(255,108,64,0.05) 100%); border-left: 5px solid #ee4d2d;">
+                <h3 style="color: #ee4d2d;">🎯 The Insider Advantage</h3>
+                <p style="font-size: 1.15em; color: #666; margin-bottom: 25px;">Having worked at Shopee for 3.5 years across Customer Service, Dispute Resolution, and Social Media Operations, I possess deep understanding of the platform's ecosystem, policies, and best practices that goes beyond typical user knowledge.</p>
+            </div>
+            
+            <h2 style="color: #667eea; margin: 40px 0 25px 0;">💡 Platform Knowledge & Expertise</h2>
+            
+            <div class="complexity-grid">
+                <div class="complexity-card" style="border-left-color: #ee4d2d;">
+                    <h5 style="color: #ee4d2d;">📋 Store Health & Compliance</h5>
+                    <p><strong>What I Know:</strong> Platform policies, penalty triggers, compliance requirements, and how to maintain optimal store health ratings</p>
+                    <p style="margin-top: 10px; font-size: 0.9em; color: #888;">From handling 1,000+ violation cases internally</p>
+                </div>
+                
+                <div class="complexity-card" style="border-left-color: #ff6c40;">
+                    <h5 style="color: #ff6c40;">⏱️ Platform Processes & Timelines</h5>
+                    <p><strong>What I Know:</strong> Product listing approval times, dispute resolution timelines, refund processing windows, and internal escalation procedures</p>
+                    <p style="margin-top: 10px; font-size: 0.9em; color: #888;">From managing 80+ daily cases with strict SLAs</p>
+                </div>
+                
+                <div class="complexity-card" style="border-left-color: #ee4d2d;">
+                    <h5 style="color: #ee4d2d;">🎯 Indonesian Market Insights</h5>
+                    <p><strong>What I Know:</strong> Customer behavior patterns, peak shopping periods (9.9, 10.10, 11.11, 12.12), preferred communication styles, and what drives Indonesian buyer decisions</p>
+                    <p style="margin-top: 10px; font-size: 0.9em; color: #888;">From 1,000+ daily customer interactions</p>
+                </div>
+                
+                <div class="complexity-card" style="border-left-color: #ff6c40;">
+                    <h5 style="color: #ff6c40;">⚠️ Risk Management</h5>
+                    <p><strong>What I Know:</strong> Common fraud patterns, how to avoid account penalties, dispute prevention strategies, and proper evidence documentation</p>
+                    <p style="margin-top: 10px; font-size: 0.9em; color: #888;">From handling high-value fraud cases as Backlog Specialist</p>
+                </div>
+                
+                <div class="complexity-card" style="border-left-color: #ee4d2d;">
+                    <h5 style="color: #ee4d2d;">📊 Performance Optimization</h5>
+                    <p><strong>What I Know:</strong> Key metrics that matter, how algorithm ranking works, seller rating factors, and strategies to achieve Preferred Seller status</p>
+                    <p style="margin-top: 10px; font-size: 0.9em; color: #888;">From analyzing performance data across thousands of stores</p>
+                </div>
+                
+                <div class="complexity-card" style="border-left-color: #ff6c40;">
+                    <h5 style="color: #ff6c40;">💬 Customer Service Excellence</h5>
+                    <p><strong>What I Know:</strong> Platform chat best practices, response time requirements, how to handle difficult customers, and maintain high satisfaction ratings</p>
+                    <p style="margin-top: 10px; font-size: 0.9em; color: #888;">From 2x Best Agent awards and managing social media channels</p>
+                </div>
+            </div>
+            
+            <div class="case-study" style="margin-top: 40px;">
+                <h3 style="color: #667eea;">🔄 How My Experience Translates to Store Management</h3>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 25px;">
+                    <div style="background: white; padding: 25px; border-radius: 10px; border-top: 4px solid #667eea;">
+                        <h4 style="color: #667eea; margin-bottom: 15px;">📦 Order Processing</h4>
+                        <p style="color: #666; line-height: 1.7;"><strong>My Experience:</strong> Processed 80+ complex dispute cases daily involving order verification, tracking, and resolution</p>
+                        <p style="color: #888; margin-top: 10px; font-size: 0.95em;"><strong>Transferable:</strong> Understanding of order lifecycle, fulfillment processes, and issue resolution</p>
+                    </div>
+                    
+                    <div style="background: white; padding: 25px; border-radius: 10px; border-top: 4px solid #764ba2;">
+                        <h4 style="color: #764ba2; margin-bottom: 15px;">📋 Product Listings</h4>
+                        <p style="color: #666; line-height: 1.7;"><strong>My Knowledge:</strong> Know approval timelines, content guidelines, prohibited items, and optimization best practices</p>
+                        <p style="color: #888; margin-top: 10px; font-size: 0.95em;"><strong>Transferable:</strong> Can create compliant listings that avoid penalties and maximize visibility</p>
+                    </div>
+                    
+                    <div style="background: white; padding: 25px; border-radius: 10px; border-top: 4px solid #ee4d2d;">
+                        <h4 style="color: #ee4d2d; margin-bottom: 15px;">💬 Customer Communication</h4>
+                        <p style="color: #666; line-height: 1.7;"><strong>My Experience:</strong> Handled 1,000+ daily engagements across platforms with high satisfaction rates</p>
+                        <p style="color: #888; margin-top: 10px; font-size: 0.95em;"><strong>Transferable:</strong> Expert at Shopee chat, de-escalation, and maintaining positive seller ratings</p>
+                    </div>
+                    
+                    <div style="background: white; padding: 25px; border-radius: 10px; border-top: 4px solid #f5576c;">
+                        <h4 style="color: #f5576c; margin-bottom: 15px;">📊 Performance Tracking</h4>
+                        <p style="color: #666; line-height: 1.7;"><strong>My Experience:</strong> Monitored KPIs, analyzed trends, and optimized processes for efficiency</p>
+                        <p style="color: #888; margin-top: 10px; font-size: 0.95em;"><strong>Transferable:</strong> Can track store metrics, identify issues early, and implement improvements</p>
+                    </div>
+                    
+                    <div style="background: white; padding: 25px; border-radius: 10px; border-top: 4px solid #11998e;">
+                        <h4 style="color: #11998e; margin-bottom: 15px;">🎯 Campaign Management</h4>
+                        <p style="color: #666; line-height: 1.7;"><strong>My Experience:</strong> Successfully managed peak periods (9.9, 10.10, 11.11, 12.12) with 2-3x volume</p>
+                        <p style="color: #888; margin-top: 10px; font-size: 0.95em;"><strong>Transferable:</strong> Know how to prepare for campaigns, optimize listings, and handle surge traffic</p>
+                    </div>
+                    
+                    <div style="background: white; padding: 25px; border-radius: 10px; border-top: 4px solid #ffd700;">
+                        <h4 style="color: #d4af37; margin-bottom: 15px;">🛡️ Risk Prevention</h4>
+                        <p style="color: #666; line-height: 1.7;"><strong>My Experience:</strong> Identified fraud patterns, managed high-risk cases, and prevented losses</p>
+                        <p style="color: #888; margin-top: 10px; font-size: 0.95em;"><strong>Transferable:</strong> Can protect store from scams, disputes, and policy violations</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 35px; border-radius: 15px; margin-top: 40px;">
+                <h3 style="color: white; margin-bottom: 20px; text-align: center;">🚀 Why I'm the Perfect Fit for Shopee Store Management</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 25px;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 3em; margin-bottom: 10px;">✅</div>
+                        <h4 style="color: white; margin-bottom: 10px;">Indonesian Market Native</h4>
+                        <p style="opacity: 0.9;">Deep understanding of local buyer behavior and preferences</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 3em; margin-bottom: 10px;">⚡</div>
+                        <h4 style="color: white; margin-bottom: 10px;">Fast Learning Curve</h4>
+                        <p style="opacity: 0.9;">Already know the platform inside-out, just need hands-on practice</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 3em; margin-bottom: 10px;">🎯</div>
+                        <h4 style="color: white; margin-bottom: 10px;">Customer-Centric</h4>
+                        <p style="opacity: 0.9;">Proven track record of excellence in customer satisfaction</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 3em; margin-bottom: 10px;">🛡️</div>
+                        <h4 style="color: white; margin-bottom: 10px;">Risk Aware</h4>
+                        <p style="opacity: 0.9;">Know how to avoid penalties and maintain store health</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chart-container" style="margin-top: 40px;">
+                <h3>📊 Shopee Ecosystem Knowledge Coverage</h3>
+                <canvas id="shopeeKnowledgeChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Dispute Resolution Tab -->
+        <div id="dispute" class="content">
+            <div class="case-study">
+                <h3>⚖️ Case Study: Optimizing Refund & Return Process</h3>
+                
+                <h4>🎯 Challenge</h4>
+                <p>Managing 80+ daily complex refund cases involving undelivered items, damaged products, incomplete orders, and high-value disputes requiring extensive investigation.</p>
+                
+                <h4>💡 Solution</h4>
+                <ul>
+                    <li>Implemented systematic evidence verification process (photos, videos, transaction history)</li>
+                    <li>Established strong coordination with Logistics team for shipment tracking</li>
+                    <li>Utilized Salesforce & Shopee CS/DMS for efficient case management</li>
+                    <li>Collaborated with Marketing for alternative compensation (vouchers)</li>
+                    <li>Specialized in Backlog cases - highest complexity and value</li>
+                </ul>
+                
+                <h4>📊 Results & Impact</h4>
+                <ul>
+                    <li>Consistently resolved 80+ cases daily while maintaining SLA compliance</li>
+                    <li>Successfully managed high-value backlog cases with extended resolution timelines</li>
+                    <li>Promoted to handle most complex disputes department-wide</li>
+                    <li>Maintained high customer satisfaction through transparent communication</li>
+                </ul>
+            </div>
+            
+            <div class="chart-container">
+                <h3>📊 Case Type Distribution</h3>
+                <canvas id="caseTypeChart"></canvas>
+            </div>
+            
+            <div class="chart-container">
+                <h3>📈 Monthly Case Volume</h3>
+                <canvas id="volumeChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- NEW: Backlog Specialist Tab -->
+        <div id="backlog" class="content">
+            <div class="backlog-highlight">
+                <h3 style="color: #e74c3c; margin-bottom: 15px;">🎯 Backlog Cases Specialist</h3>
+                <p style="font-size: 1.1em; color: #666; margin-bottom: 20px;">Promoted to handle the most complex and challenging dispute cases in the department due to proven expertise in managing high-stakes situations.</p>
+            </div>
+            
+            <div class="case-study">
+                <h4>⚠️ What Makes Backlog Cases Challenging?</h4>
+                <p style="margin-bottom: 20px;">Backlog cases represent the highest level of complexity requiring advanced investigation skills, cross-functional coordination, and expert judgment.</p>
+                
+                <div class="complexity-grid">
+                    <div class="complexity-card high-value">
+                        <h5 style="color: #e74c3c;">💰 High Value Cases</h5>
+                        <p>Disputes involving significant monetary amounts (high nominal) requiring extra verification and senior approval</p>
+                    </div>
+                    <div class="complexity-card fraud">
+                        <h5 style="color: #e67e22;">🚨 Fraud Detection</h5>
+                        <p>Customer fraud, seller fraud, or 3PL (logistics) fraud requiring deep investigation and evidence gathering</p>
+                    </div>
+                    <div class="complexity-card hc">
+                        <h5 style="color: #d35400;">😤 Hard Customer (HC)</h5>
+                        <p>Extremely difficult customers requiring advanced de-escalation and negotiation techniques</p>
+                    </div>
+                    <div class="complexity-card aging">
+                        <h5 style="color: #c0392b;">⏰ Aging Cases</h5>
+                        <p>Long-standing cases with extended timelines requiring persistent follow-up and multi-party coordination</p>
+                    </div>
+                </div>
+                
+                <h4>🔍 Investigation & Resolution Approach</h4>
+                <ul>
+                    <li><strong>Deep Evidence Analysis:</strong> Comprehensive review of transaction history, shipping logs, photo/video evidence, and communication patterns</li>
+                    <li><strong>Fraud Pattern Recognition:</strong> Identifying suspicious behaviors, inconsistent claims, and coordinated fraud attempts</li>
+                    <li><strong>Cross-functional Collaboration:</strong> Working with Logistics, Finance, Legal, and Fraud Prevention teams</li>
+                    <li><strong>Risk Assessment:</strong> Evaluating financial impact and reputation risks before making resolution decisions</li>
+                    <li><strong>Documentation Excellence:</strong> Maintaining detailed case records for audit trails and process improvement</li>
+                </ul>
+                
+                <h4>📈 Key Achievements</h4>
+                <ul>
+                    <li>Successfully resolved 100+ high-complexity backlog cases monthly</li>
+                    <li>Identified and prevented multiple fraud schemes, protecting company assets</li>
+                    <li>Reduced average backlog aging time through systematic investigation methods</li>
+                    <li>Maintained high resolution accuracy despite challenging case conditions</li>
+                    <li>Developed best practices adopted by the entire team</li>
+                    <li>Recognized as go-to specialist for most difficult cases department-wide</li>
+                </ul>
+            </div>
+            
+            <div class="chart-container">
+                <h3>📊 Backlog Case Complexity Breakdown</h3>
+                <canvas id="backlogComplexityChart"></canvas>
+            </div>
+            
+            <div class="chart-container">
+                <h3>📈 Resolution Success Rate (Monthly)</h3>
+                <canvas id="backlogResolutionChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Social Media Tab -->
+        <div id="social" class="content">
+            <div class="case-study">
+                <h3>📱 Case Study: Driving Customer Engagement Through Social Media</h3>
+                
+                <h4>🎯 Objective</h4>
+                <p>Manage high-volume customer interactions across multiple social media platforms while maintaining brand reputation and customer satisfaction.</p>
+                
+                <h4>💡 Strategy</h4>
+                <ul>
+                    <li>Managed 110-150 daily cases on assigned platform through rotating schedule (Instagram, Twitter, Facebook, YouTube, Google Business Profile)</li>
+                    <li>Handled up to 300+ daily Instagram engagements (DMs, comments, mentions) on regular days</li>
+                    <li>Monitored and analyzed reviews on Google Play Store & Apple App Store</li>
+                    <li>Used Salesforce CRM for comprehensive case tracking</li>
+                    <li>Collaborated with Marketing for voucher campaigns and giveaways</li>
+                </ul>
+                
+                <h4>📊 Key Achievements</h4>
+                <ul>
+                    <li>Selected as <strong>Base Agent</strong> within 5 months (Nov 2020)</li>
+                    <li>Received <strong>multiple individual performance rewards</strong> for outstanding customer engagement</li>
+                    <li>Successfully managed peak period campaigns (11.11, 12.12)</li>
+                    <li>Maintained consistent high engagement rates across all platforms</li>
+                </ul>
+            </div>
+            
+            <div class="chart-container">
+                <h3>📊 Platform Rotation & Case Volume</h3>
+                <canvas id="socialChart"></canvas>
+            </div>
+            
+            <div class="chart-container">
+                <h3>📈 Instagram Engagement: Regular vs Campaign Days</h3>
+                <canvas id="platformChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Process Flow Tab -->
+        <div id="process" class="content">
+            <h2 style="color: #667eea; margin-bottom: 30px;">🔄 Dispute Resolution Process Flow</h2>
+            
+            <div class="process-flow">
+                <div class="process-step">
+                    <strong>1. Case Receipt</strong>
+                    <p style="margin-top: 10px; font-size: 0.9em;">Customer submits complaint via CRM</p>
+                </div>
+                <div class="process-step">
+                    <strong>2. Evidence Review</strong>
+                    <p style="margin-top: 10px; font-size: 0.9em;">Analyze photos, videos, transaction data</p>
+                </div>
+                <div class="process-step">
+                    <strong>3. Investigation</strong>
+                    <p style="margin-top: 10px; font-size: 0.9em;">Coordinate with Logistics & Seller</p>
+                </div>
+                <div class="process-step">
+                    <strong>4. Resolution</strong>
+                    <p style="margin-top: 10px; font-size: 0.9em;">Refund, voucher, or alternative solution</p>
+                </div>
+                <div class="process-step">
+                    <strong>5. Follow-up</strong>
+                    <p style="margin-top: 10px; font-size: 0.9em;">Ensure customer satisfaction</p>
+                </div>
+            </div>
+            
+            <div style="margin-top: 50px;">
+                <h2 style="color: #667eea; margin-bottom: 30px;">🛠️ Tools & Technologies</h2>
+                <div class="metric-grid">
+                    <div class="metric-card" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                        <h3>Salesforce</h3>
+                        <p>Primary CRM Platform</p>
+                    </div>
+                    <div class="metric-card" style="background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);">
+                        <h3>Shopee CS/DMS</h3>
+                        <p>Internal Management System</p>
+                    </div>
+                    <div class="metric-card" style="background: linear-gradient(135deg, #0575e6 0%, #021b79 100%);">
+                        <h3>Social Platforms</h3>
+                        <p>Multi-channel Management</p>
+                    </div>
+                    <div class="metric-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                        <h3>Analytics Tools</h3>
+                        <p>Data-driven Insights</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chart-container" style="margin-top: 30px;">
+                <h3>📊 Skills Proficiency</h3>
+                <canvas id="skillsChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Tab switching function
+        function showTab(tabName) {
+            const tabs = document.querySelectorAll('.tab');
+            const contents = document.querySelectorAll('.content');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            contents.forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+        
+        // Timeline Chart
+        const timelineCtx = document.getElementById('timelineChart').getContext('2d');
+        new Chart(timelineCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jun 2020', 'Nov 2020', 'Feb 2021', 'Jan 2022', 'Sep 2023', 'Dec 2023'],
+                datasets: [{
+                    label: 'Career Milestones',
+                    data: [1, 2, 3, 4, 5, 6],
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const milestones = [
+                                    'Started as Social Media Analyst',
+                                    'Best Agent Award',
+                                    'Promoted to Senior Analyst',
+                                    'Runner-Up Best Agent',
+                                    'Backlog Specialist',
+                                    'Completed 3+ Years'
+                                ];
+                                return milestones[context.dataIndex];
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: { display: false }
+                }
+            }
+        });
+        
+        // Case Type Chart
+        const caseTypeCtx = document.getElementById('caseTypeChart').getContext('2d');
+        new Chart(caseTypeCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Undelivered Items', 'Damaged Products', 'Incomplete Orders', 'Defective Items', 'Others'],
+                datasets: [{
+                    data: [30, 25, 20, 15, 10],
+                    backgroundColor: ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#ffd700']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+        
+        // Volume Chart
+        const volumeCtx = document.getElementById('volumeChart').getContext('2d');
+        new Chart(volumeCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [{
+                    label: 'Cases Handled',
+                    data: [2400, 2200, 2500, 2300, 2400, 2600, 2500, 2400, 2300, 2500, 2700, 2400],
+                    backgroundColor: 'rgba(102, 126, 234, 0.8)'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+        
+        // Backlog Complexity Chart
+        const backlogComplexityCtx = document.getElementById('backlogComplexityChart').getContext('2d');
+        new Chart(backlogComplexityCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['High Value', 'Customer Fraud', '3PL/Logistics Fraud', 'Hard Customer (HC)', 'Aging Cases'],
+                datasets: [{
+                    data: [25, 20, 20, 20, 15],
+                    backgroundColor: ['#e74c3c', '#e67e22', '#d35400', '#c0392b', '#ff6b6b']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+        
+        // Backlog Resolution Chart
+        const backlogResolutionCtx = document.getElementById('backlogResolutionChart').getContext('2d');
+        new Chart(backlogResolutionCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [{
+                    label: 'Resolution Rate (%)',
+                    data: [82, 85, 87, 88, 90, 91, 89, 92, 93, 91, 94, 95],
+                    borderColor: '#e74c3c',
+                    backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 75,
+                        max: 100,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Social Media Chart - Platform Rotation
+        const socialCtx = document.getElementById('socialChart').getContext('2d');
+        new Chart(socialCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Instagram', 'Twitter', 'Facebook', 'YouTube', 'Google Business'],
+                datasets: [{
+                    label: 'Average Cases per Assigned Day',
+                    data: [140, 120, 110, 115, 115],
+                    backgroundColor: ['#C13584', '#1DA1F2', '#4267B2', '#FF0000', '#4285F4']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: true }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Number of Cases'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Platform Chart - Instagram Regular vs Campaign
+        const platformCtx = document.getElementById('platformChart').getContext('2d');
+        new Chart(platformCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Regular Days', 'Campaign Days (9.9, 10.10, 11.11, 12.12)'],
+                datasets: [{
+                    label: 'Instagram Engagements',
+                    data: [300, 1000],
+                    backgroundColor: ['#C13584', '#E1306C']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: true }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Daily Engagements'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Skills Chart
+        const skillsCtx = document.getElementById('skillsChart').getContext('2d');
+        new Chart(skillsCtx, {
+            type: 'radar',
+            data: {
+                labels: ['CRM Tools', 'Dispute Resolution', 'Social Media', 'Analysis', 'Communication', 'Problem Solving'],
+                datasets: [{
+                    label: 'Proficiency Level',
+                    data: [95, 90, 95, 85, 95, 90],
+                    backgroundColor: 'rgba(102, 126, 234, 0.2)',
+                    borderColor: '#667eea',
+                    pointBackgroundColor: '#667eea'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        });
+        
+        // Shopee Knowledge Chart
+        const shopeeKnowledgeCtx = document.getElementById('shopeeKnowledgeChart').getContext('2d');
+        new Chart(shopeeKnowledgeCtx, {
+            type: 'radar',
+            data: {
+                labels: ['Platform Policies', 'Customer Behavior', 'Order Management', 'Dispute Handling', 'Performance Metrics', 'Risk Prevention', 'Indonesian Market'],
+                datasets: [{
+                    label: 'Knowledge Level',
+                    data: [95, 95, 85, 98, 90, 95, 98],
+                    backgroundColor: 'rgba(238, 77, 45, 0.2)',
+                    borderColor: '#ee4d2d',
+                    pointBackgroundColor: '#ee4d2d',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#ee4d2d'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            stepSize: 20
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
